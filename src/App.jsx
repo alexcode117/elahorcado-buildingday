@@ -1,33 +1,48 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [username] = useState('Usuario')
+  const [lives] = useState(6)
+  const [round] = useState(1)
+  const word = 'PALABRA'
+  const revealed = [true, false, false, true, false, false, true];
+  const [play, setPlay] = useState(false);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+    <h1>Building Day: Hangman's game</h1>
+
+      {play && <>
+        <div style={{ display: 'flex', flexDirection: "column", alignItems: 'center' }}>
+          <h2>Username: {username}</h2>
+          <h2>Lives: {lives}</h2>
+          <h2>Round: {round}</h2>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '20px', }}>
+            {word.split('').map((letter, idx) => (
+              <span
+                key={idx}
+                style={{
+                  borderBottom: '2px solid #333',
+                  width: '30px',
+                  textAlign: 'center',
+                  fontSize: '2rem'
+                }}
+              >
+                {revealed[idx] ? letter : ''}
+              </span>
+            ))}
+          </div>
+        </div>
+
+      </> }
+
+      <button onClick={() => setPlay(prev => !prev)}>{play ? 'End game' : "Play"}</button>
+
+      
+      
+
     </>
   )
 }
