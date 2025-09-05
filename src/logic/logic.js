@@ -2,15 +2,25 @@
 
 export const actualizarPalabra = (posiciones=[], letra="") => {
     semaforo=false;
-    actualizar=localStorage.getItem("").split("");
+    let actualizar=localStorage.getItem('adivinar');
     i=0;
     while(i<posiciones.length){
-        if(posiciones[i]===letra){
-
-            semaforo=true;
-        }
+        actualizar[posiciones[i]]=letra;
+        semaforo=true;
         i++;
     }
-
+    localStorage.setItem('adivinar', actualizar);
     return semaforo
+}
+export const guardarPalabra = (posiciones=[], letra="") => {
+    semaforo=false;
+    palabra=getRandomNamePokemon({ minLength:5 })
+    localStorage.setItem('palabra', palabra);
+    let i=0;let characters="";
+    while(i<palabra.length){
+        characters+="_";
+        i++;
+    }
+    localStorage.setItem('adivinar', characters);
+    return true;
 }
