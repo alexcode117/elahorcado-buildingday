@@ -1,117 +1,126 @@
-// App.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import './index.css';
+import { getRamdonNamePokemon } from './pokeapi/pokeapi';
 
-const POKEMON_GEN1 = [
-  "bulbasaur","ivysaur","venusaur","charmander","charmeleon","charizard","squirtle","wartortle","blastoise","caterpie","metapod","butterfree","weedle","kakuna","beedrill","pidgey","pidgeotto","pidgeot","rattata","raticate","spearow","fearow","ekans","arbok","pikachu","raichu","sandshrew","sandslash","nidoran-f","nidorina","nidoqueen","nidoran-m","nidorino","nidoking","clefairy","clefable","vulpix","ninetales","jigglypuff","wigglytuff","zubat","golbat","oddish","gloom","vileplume","paras","parasect","venonat","venomoth","diglett","dugtrio","meowth","persian","psyduck","golduck","mankey","primeape","growlithe","arcanine","poliwag","poliwhirl","poliwrath","abra","kadabra","alakazam","machop","machoke","machamp","bellsprout","weepinbell","victreebel","tentacool","tentacruel","geodude","graveler","golem","ponyta","rapidash","slowpoke","slowbro","magnemite","magneton","farfetchd","doduo","dodrio","seel","dewgong","grimer","muk","shellder","cloyster","gastly","haunter","gengar","onix","drowzee","hypno","krabby","kingler","voltorb","electrode","exeggcute","exeggutor","cubone","marowak","hitmonlee","hitmonchan","lickitung","koffing","weezing","rhyhorn","rhydon","chansey","tangela","kangaskhan","horsea","seadra","goldeen","seaking","staryu","starmie","mr-mime","scyther","jynx","electabuzz","magmar","pinsir","tauros","magikarp","gyarados","lapras","ditto","eevee","vaporeon","jolteon","flareon","porygon","omanyte","omastar","kabuto","kabutops","aerodactyl","snorlax","articuno","zapdos","moltres","dratini","dragonair","dragonite","mewtwo","mew"
-];
+export default function App() {
 
-function getSpriteUrl(id){
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-}
+  const [token, setToken] = useState(false)
 
-export default function App(){
-  const [wordIndex, setWordIndex] = useState(null);
+  const handleLogin = () => {
+    
+  }
+  // Estado para la palabra actual
   const [word, setWord] = useState('');
+  // Estado para la palabra oculta (guiones bajos y letras reveladas)
   const [masked, setMasked] = useState([]);
-  const [wrong, setWrong] = useState(0);
-  const [maxTries, setMaxTries] = useState(6);
+  // Estado para las letras ya usadas
   const [used, setUsed] = useState(new Set());
+  // Estado para el número de errores cometidos
+  const [wrong, setWrong] = useState(0);
+  // Estado para el puntaje acumulado
   const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [sideIds, setSideIds] = useState([1,2,3,4]);
-  const [revealedSprite, setRevealedSprite] = useState(null);
+  // Estado para saber si la palabra está revelada (fin de partida)
+  const [revealed, setRevealed] = useState(false);
+  // Número máximo de intentos permitidos
+  const maxTries = 6;
+  // Referencia para el teclado virtual
   const keyboardRef = useRef(null);
 
-  useEffect(()=>{
-    startNewGame();
-    // keyboard focus for accessibility
-    keyboardRef.current?.focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(()=>{
-    // update side sprites occasionally for freshness
-    if(wordIndex !== null){
-      const ids = new Set();
-      while(ids.size < 4){
-        const r = Math.floor(Math.random()*POKEMON_GEN1.length);
-        if(r !== wordIndex) ids.add(r);
-      }
-      setSideIds(Array.from(ids));
-    }
-  }, [wordIndex]);
-
-  function pickWord(){
-    const idx = Math.floor(Math.random()*POKEMON_GEN1.length);
-    return {w: POKEMON_GEN1[idx], idx};
-  }
-
-  function startNewGame(){
-    const {w, idx} = pickWord();
-    setWordIndex(idx);
+  // Inicia una nueva partida obteniendo una palabra aleatoria
+  async function startNewGame() {
+    // Llama a la función que obtiene un nombre de Pokémon aleatorio
+    const w = await getRamdonNamePokemon({ minLength: 5 });
     setWord(w);
+    // Inicializa la palabra oculta con guiones bajos
     setMasked(w.split('').map(ch => /[a-z]/i.test(ch) ? '_' : ch));
-    setWrong(0);
     setUsed(new Set());
-    setRevealedSprite(null);
-    setMaxTries(6);
+    setWrong(0);
+    setRevealed(false);
+    // Aquí podrías llamar a un logger externo para registrar el inicio de partida
+    // logEvent('startGame', { word: w });
   }
 
-  function press(letter){
-    if(used.has(letter) || revealedSprite) return;
+  // Procesa la letra presionada por el usuario
+  function press(letter) {
+    if (used.has(letter) || revealed) return; // Ignora si ya fue usada o si la partida terminó
     const newUsed = new Set(used);
     newUsed.add(letter);
     setUsed(newUsed);
 
-    if(word.includes(letter)){
+    if (word.includes(letter)) {
+      // Revela la letra en la palabra oculta
       const arr = [...masked];
-      for(let i=0;i<word.length;i++) if(word[i]===letter) arr[i] = letter.toUpperCase();
+      for (let i = 0; i < word.length; i++)
+        if (word[i] === letter) arr[i] = letter.toUpperCase();
       setMasked(arr);
-      if(!arr.includes('_')) handleWin();
+      // Si ya no quedan guiones bajos, el usuario ganó
+      if (!arr.includes('_')) handleWin();
     } else {
+      // Si la letra no está, suma un error
       const nw = wrong + 1;
       setWrong(nw);
-      if(nw >= maxTries) handleLose();
+      // Si se alcanzó el máximo de errores, el usuario perdió
+      if (nw >= maxTries) handleLose();
     }
+    // Aquí podrías registrar cada intento
+    // logEvent('press', { letter, result: word.includes(letter) });
   }
 
-  function handleWin(){
-    setScore(prev => prev + Math.max(10, 60 - wrong*8));
-    setStreak(prev => prev + 1);
-    reveal(true);
-    setTimeout(()=> startNewGame(), 2000);
+  // Maneja el caso de victoria
+  function handleWin() {
+    setScore(prev => prev + Math.max(10, 60 - wrong * 8));
+    setRevealed(true);
+    setTimeout(() => startNewGame(), 2000);
+    // logEvent('win', { word, score });
   }
 
-  function handleLose(){
-    setStreak(0);
-    reveal(false);
-    setTimeout(()=> startNewGame(), 2600);
-  }
-
-  function reveal(success){
-    setRevealedSprite(getSpriteUrl(wordIndex+1));
+  // Maneja el caso de derrota
+  function handleLose() {
+    setRevealed(true);
+    // Revela la palabra completa
     setMasked(word.split('').map(ch => /[a-z]/i.test(ch) ? ch.toUpperCase() : ch));
+    setTimeout(() => startNewGame(), 2600);
+    // logEvent('lose', { word });
   }
 
-  function hint(){
-    if(revealedSprite) return;
-    const unrevealed = masked.map((m,i)=> m === '_' ? i : -1).filter(i=>i>=0);
-    if(!unrevealed.length) return;
-    const idx = unrevealed[Math.floor(Math.random()*unrevealed.length)];
+  // Revela la palabra manualmente (botón "Mostrar")
+  function reveal() {
+    setRevealed(true);
+    setMasked(word.split('').map(ch => /[a-z]/i.test(ch) ? ch.toUpperCase() : ch));
+    // logEvent('reveal', { word });
+  }
+
+  // Da una pista revelando una letra aleatoria no descubierta
+  function hint() {
+    if (revealed) return;
+    const unrevealed = masked.map((m, i) => m === '_' ? i : -1).filter(i => i >= 0);
+    if (!unrevealed.length) return;
+    const idx = unrevealed[Math.floor(Math.random() * unrevealed.length)];
     press(word[idx]);
+    // logEvent('hint', { letter: word[idx] });
   }
 
-  function handleKeyDown(e){
-    if(e.key && /^[a-zA-Z]$/.test(e.key)) press(e.key.toLowerCase());
-    if(e.key === 'Enter') startNewGame();
+  // Permite jugar usando el teclado físico
+  function handleKeyDown(e) {
+    if (e.key && /^[a-zA-Z]$/.test(e.key)) press(e.key.toLowerCase());
+    if (e.key === 'Enter') startNewGame();
   }
 
-  // render helpers
+  // Inicializa la partida al montar el componente
+  useEffect(() => {
+    startNewGame();
+    keyboardRef.current?.focus();
+    // eslint-disable-next-line
+  }, []);
+
+  // Letras del teclado virtual
   const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
+  // Renderizado de la interfaz
   return (
-    <div className="app" onKeyDown={handleKeyDown} tabIndex={0} ref={keyboardRef}>
+    <>
+
+    {token ? (<div className="app" onKeyDown={handleKeyDown} tabIndex={0} ref={keyboardRef}>
       <div className="container">
         <header className="top">
           <div className="brand">
@@ -128,62 +137,40 @@ export default function App(){
         </header>
 
         <main className="game">
-          <aside className="side">
-            <img src={getSpriteUrl(sideIds[0]+1)} alt="" />
-            <img src={getSpriteUrl(sideIds[1]+1)} alt="" />
-          </aside>
-
           <section className="center">
             <div className="card main">
               <div className="tries">Intentos: <strong>{Math.max(0, maxTries - wrong)}</strong></div>
-
               <div className="secret">
                 <div className="secret-inner">
-                  {masked.map((ch,i)=> (
-                    <div key={i} className={`slot ${ch==='_'? 'empty':''}`}>{ch}</div>
+                  {masked.map((ch, i) => (
+                    <div key={i} className={`slot ${ch === '_' ? 'empty' : ''}`}>{ch}</div>
                   ))}
                 </div>
               </div>
-
-              <div className="preview">
-                <img
-                  src={revealedSprite || ''}
-                  className={revealedSprite ? 'visible' : 'hidden'}
-                  alt={revealedSprite ? word : 'sprite oculto'}
-                />
-              </div>
-
               <div className="keyboard">
-                {letters.map(l=> (
+                {letters.map(l => (
                   <button
                     key={l}
-                    className={`key ${used.has(l)? 'used':''}`}
-                    onClick={()=> press(l)}
+                    className={`key ${used.has(l) ? 'used' : ''}`}
+                    onClick={() => press(l)}
                     aria-pressed={used.has(l)}
                   >{l.toUpperCase()}</button>
                 ))}
               </div>
-
               <div className="controls">
-                <button className="btn primary" onClick={()=> reveal(true)}>Mostrar</button>
-                <button className="btn ghost" onClick={()=> reveal(false)}>Rendirme</button>
+                <button className="btn primary" onClick={reveal}>Mostrar</button>
+                <button className="btn ghost" onClick={handleLose}>Rendirme</button>
               </div>
             </div>
-
             <div className="status">
               <div>Score: <strong>{score}</strong></div>
-              <div>Racha: <strong>{streak}</strong></div>
             </div>
           </section>
-
-          <aside className="side right">
-            <img src={getSpriteUrl(sideIds[2]+1)} alt="" />
-            <img src={getSpriteUrl(sideIds[3]+1)} alt="" />
-          </aside>
         </main>
-
-        <footer className="foot">Hecho con ❤️ • Demo con sprites públicos (PokeAPI). Respeta licencias en producción.</footer>
+        <footer className="foot">Hecho con ❤️ • Demo Building Day</footer>
       </div>
-    </div>
+    </div>) : <button onClick={handleLogin}>Login</button> }
+    
+    </>
   );
 }
