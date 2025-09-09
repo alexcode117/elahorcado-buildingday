@@ -1,3 +1,4 @@
+import { saveGameToHive } from "../blockchain/blockchain";
 import { getRamdonNamePokemon } from "../pokeapi/pokeapi";
 
 export class Auth {
@@ -47,7 +48,7 @@ export class Game {
     return newState;
   }
 
-  static press(gameState, letter) {
+  static async press(gameState, letter) {
     if (
       gameState.used.has(letter) ||
       gameState.revealed ||
@@ -81,6 +82,8 @@ export class Game {
         newState.revealed = true;
       }
     }
+
+    await saveGameToHive(gameState);
     return newState;
   }
 

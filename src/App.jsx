@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import { Game } from "./logic/game";
+import "./blockchain/blockchain";
+import { hiveClient } from "./blockchain/blockchain";
 
 export default function App() {
   const [currentGame, setCurrentGame] = useState(null);
@@ -43,16 +45,36 @@ export default function App() {
       Game.press(currentGame, e.key.toLowerCase());
   }
 
-  function handlePress(letter) {
-    const newGameState = Game.press(currentGame, letter);
+  async function handlePress(letter) {
+    const newGameState = await Game.press(currentGame, letter);
     setCurrentGame(newGameState);
   }
 
   // Inicializa la partida al montar el componente
   useEffect(() => {
     keyboardRef.current?.focus();
-    // eslint-disable-next-line
-  }, []);
+    const stream = hiveClient.blockchain.getBlockStream();
+
+    if (currentGame)
+      stream.on("data", (block) => {
+        const { transactions } = block;
+
+        const operations = transactions.flatMap((tx) => tx.operations);
+
+        for (const op of operations) {
+          if (op[0] === "custom_json") {
+            const [, data] = op;
+            if (data.id === "elahorcado-builingday-test") {
+              console.log(op);
+              console.log(data);
+            }
+          }
+        }
+      });
+    return () => {
+      if (stream) stream.pause();
+    };
+  }, [currentGame]);
 
   // Letras del teclado virtual
   const letters = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -121,9 +143,9 @@ export default function App() {
                   ))}
                 </div>
                 <div className="controls">
-                  <button className="btn primary" onClick={reveal}>
+                  {/* <button className="btn primary" onClick={reveal}>
                     Mostrar
-                  </button>
+                  </button> */}
                   <button className="btn ghost" onClick={handleLose}>
                     Rendirme
                   </button>
