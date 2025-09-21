@@ -1,137 +1,125 @@
-# Hive Poké Guess — Guess the Pokémon!
+# 🎮 Hive + React + PokeAPI Word Game
 
-A simple and fun React + Vite app where you try to guess a Pokémon’s name fetched from the public [PokéAPI](https://pokeapi.co/). The app integrates with the Hive blockchain using `custom_json` operations to authenticate users (via Hive Keychain) and persist game-related data (e.g., login events, guesses, or scores) on-chain.
+A fun **educational project** built with **Hive Blockchain**, **React (JavaScript)**, and the **PokeAPI**.  
+The game challenges users to **guess Pokémon names letter by letter** (similar to Hangman).  
 
-## Features
+---
 
-- Guess-the-Pokémon gameplay powered by PokéAPI.
-- Hive blockchain integration using `custom_json`:
-  - Login with Hive Keychain.
-  - Store game events and/or scores immutably.
-- Modern front-end stack: React 19 + Vite 7.
-- Fast local development with HMR.
+## 🚀 Features
 
-## Tech Stack
+- 🎲 **Random Pokémon name** fetched from [PokeAPI](https://pokeapi.co/)  
+- 🔡 **Guess letters** until the word is complete  
+- ❤️ Track remaining attempts and game progress  
+- 🧩 Clean and simple UI in React  
+- 🔗 **Hive Blockchain integration**:
+  - Hive Keychain login
+  - Post game results to Hive via `custom_json`  
+  - (Optional) Leaderboard stored on Hive  
 
-- React 19
-- Vite 7
-- Hive blockchain (`custom_json` operations)
-- Hive Keychain (browser extension)
-- PokéAPI
+---
 
-## Getting Started
+## 📚 Learning Objectives
 
-### Prerequisites
+This project is designed for **students of the Hive Building Day workshops**. By completing it, students will:
 
-- Node.js 18+ and npm
-- A Hive account
-- [Hive Keychain](https://hive-keychain.com/) browser extension installed and unlocked
+1. Understand the basics of **React state & props**  
+2. Practice **API requests** with fetch/axios  
+3. Use **Hive Keychain** to authenticate and broadcast blockchain transactions  
+4. See how **custom_json** can be used to log data/events  
+5. Work collaboratively on a fun, gamified project  
 
-No API keys are required for PokéAPI.
+---
 
-### Installation
+## 🛠️ Tech Stack
 
-```bash
-npm install
-```
+- **React** (frontend framework)  
+- **JavaScript (ES6)**  
+- **PokeAPI** (Pokémon data source)  
+- **Hive Blockchain** (auth & data)  
+- **Hive Keychain** (browser extension for Hive auth)  
 
-### Development
+---
 
-```bash
-npm run dev
-```
+## 📦 Installation & Setup
 
-Vite will print a local URL (typically http://localhost:5173). Open it in your browser.
-
-### Production Build
-
-```bash
-npm run build
-```
-
-### Preview Production Build
-
-```bash
-npm run preview
-```
-
-## Project Structure
-
-Key files and folders:
-
-- `src/`
-  - `main.jsx` — App bootstrap.
-  - `App.jsx` — Main React component and layout.
-  - `logic/logic.js` — Core game logic (guess validation, win/lose flow, etc.).
-  - `pokeapi/pokeapi.js` — PokéAPI helpers for fetching Pokémon data.
-  - `blockchain/blockchain.js` — Hive `custom_json` helpers (login and data storage).
-  - `App.css`, `index.css` — Styling.
-- `public/` — Static assets served as-is.
-- `index.html` — HTML template.
-- `vite.config.js` — Vite config.
-- `package.json` — Scripts and dependencies.
-
-## How Hive Integration Works
-
-This app uses Hive’s `custom_json` operation (typically signed by the user’s posting authority via Hive Keychain) to authenticate and record game data.
-
-Typical flow:
-
-1. User clicks “Login with Hive”.
-2. App requests a `custom_json` signature from Hive Keychain (e.g., id: `poke-guess-login`).
-3. On success, the app treats the Hive account as authenticated.
-4. For game events (e.g., correct guess, attempts, score), the app sends another `custom_json` (e.g., id: `poke-guess-event`) with structured JSON payload like:
-   ```json
-   {
-     "event": "correct_guess",
-     "pokemon": "pikachu",
-     "attempts": 3,
-     "timestamp": 1712345678
-   }
+1. **Clone this repo**
+   ```bash
+   git clone https://github.com/yourusername/hive-pokemon-wordgame.git
+   cd hive-pokemon-wordgame
    ```
-5. The transaction is broadcast via Hive Keychain; your app can later read these logs (if implemented) using Hive APIs or indexers.
 
-Security notes:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- Private keys never leave the user’s browser; Hive Keychain handles signing.
-- Use posting authority for `custom_json` where possible (not active).
-- Consider rate-limiting and clear user feedback when Hive is unavailable.
+3. **Environment setup**
+   - Create a `.env` file with:
+     ```
+     REACT_APP_HIVE_API=https://api.hive.blog
+     ```
+   - (Optional) Add any custom settings, like Hive-Engine RPC or leaderboard ID.
 
-## How PokéAPI Is Used
+4. **Start the dev server**
+   ```bash
+   npm start
+   ```
+   The app runs at [http://localhost:3000](http://localhost:3000).
 
-- Fetch random or specific Pokémon data (name, sprite, etc.) from PokéAPI.
-- Use the returned information to drive the guessing game.
-- No API key required; respect PokéAPI rate limits.
+---
 
-## Available Scripts
+## 🎮 How to Play
 
-From `package.json`:
+1. **Login with Hive Keychain**  
+2. A random Pokémon name is fetched from PokeAPI  
+3. Guess the Pokémon letter by letter  
+4. If you guess correctly → you win 🎉  
+5. Results can be **posted to Hive** (optional)  
 
-- `npm run dev` — Start Vite dev server.
-- `npm run build` — Build for production.
-- `npm run preview` — Preview the production build locally.
-- `npm run lint` — Run ESLint.
+---
 
-## Configuration
+## 🔗 Hive Integration (Optional)
 
-- PokéAPI requires no configuration.
-- Hive:
-  - Ensure Hive Keychain is installed and unlocked.
-  - Set your desired `custom_json` IDs within `src/blockchain/blockchain.js`.
-  - Decide what payload you want to store (e.g., guesses, result, score, timestamp).
+- **Authentication** → via Hive Keychain `requestHandshake` + `requestSignBuffer`  
+- **Posting results** → broadcast `custom_json` with the score and guessed Pokémon  
+- **Leaderboard** → read stored scores from Hive transactions with matching `id`  
 
-If you later add environment variables (e.g., feature flags), document them here.
+---
 
-## Roadmap
+## 📂 Project Structure
 
-- Add UI to show recent on-chain game events per user.
-- Add difficulty levels (e.g., hide sprite, provide hints).
-- Add scoreboard derived from on-chain logs.
-- Improve accessibility and mobile UX.
+```
+src/
+├── components/
+│   ├── GameBoard.js      # main game logic
+│   ├── Keyboard.js       # on-screen letter selection
+│   ├── HiveAuth.js       # login with Hive Keychain
+│   └── Leaderboard.js    # (optional) leaderboard component
+├── api/
+│   └── pokeapi.js        # wrapper to fetch Pokémon
+├── utils/
+│   └── hive.js           # Hive RPC + custom_json helper
+└── App.js                # root component
+```
 
-## Acknowledgements
+---
 
-- [PokéAPI](https://pokeapi.co/)
-- [Hive](https://hive.io/) and [Hive Keychain](https://hive-keychain.com/)
-- [Vite](https://vitejs.dev/)
-- [React](https://react.dev/)
+## ✅ Next Steps for Students
+
+- [ ] Add lives/attempts counter  
+- [ ] Style the game with CSS/Tailwind  
+- [ ] Add more Hive blockchain features (store attempts, record streaks)  
+- [ ] Build a **leaderboard** from blockchain data  
+
+---
+
+## 🤝 Contributing
+
+Students are welcome to fork this repo, work in teams, and share improvements.  
+Feel free to open issues & pull requests!  
+
+---
+
+## 📜 License
+
+MIT License © 2025 YourName
