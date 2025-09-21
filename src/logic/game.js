@@ -1,11 +1,9 @@
 import { saveGameToHive } from "../blockchain/blockchain";
 import { getRamdonNamePokemon } from "../pokeapi/pokeapi";
 
-export class Auth {
-  constructor() {
-    this.token = "";
-  }
-}
+//TODO
+// Hash word to save it in the blockchain
+// Login (saving username)
 
 export class Player {
   constructor(name) {
@@ -18,7 +16,6 @@ export class Player {
 export class Game {
   constructor() {
     this.gameId = Date.now();
-    this.players = [];
     this.word = "";
     this.masked = [];
     this.used = new Set();
@@ -43,7 +40,6 @@ export class Game {
       masked: w.split("").map((ch) => (/[a-z]/i.test(ch) ? "_" : ch)),
       currentPlayer: newPlayer,
     };
-    newState.players.push(newPlayer);
 
     return newState;
   }
@@ -112,3 +108,4 @@ export class Game {
     return newState;
   }
 }
+

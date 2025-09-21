@@ -28,3 +28,8 @@ export async function saveGameToHive(gameState) {
     return null;
   }
 }
+
+//TODO 
+// Auth
+// Fetching custom_json from account history
+// Transfer tokens to the player
