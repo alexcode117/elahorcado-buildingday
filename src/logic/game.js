@@ -1,10 +1,6 @@
 import { saveGameToHive } from "../blockchain/blockchain";
 import { getRamdonNamePokemon } from "../pokeapi/pokeapi";
 
-//TODO
-// Hash word to save it in the blockchain
-// Login (saving username)
-
 export class Player {
   constructor(name) {
     this.username = name;
@@ -27,18 +23,10 @@ export class Game {
   static async startGame(gameState) {
     const w = await getRamdonNamePokemon({ minLength: 5 });
 
-    let res = "";
-    do {
-      res = prompt("Ingresa tu nombre de usuario Hive");
-    } while (!res);
-
-    const newPlayer = new Player(res);
-
     const newState = {
       ...gameState,
       word: w,
       masked: w.split("").map((ch) => (/[a-z]/i.test(ch) ? "_" : ch)),
-      currentPlayer: newPlayer,
     };
 
     return newState;
@@ -108,4 +96,3 @@ export class Game {
     return newState;
   }
 }
-

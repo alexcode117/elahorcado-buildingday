@@ -1,27 +1,51 @@
 import { useEffect, useRef, useState } from "react";
 import "./index.css";
-import { Game } from "./logic/game";
 import "./blockchain/blockchain";
 import { hiveClient } from "./blockchain/blockchain";
 
+import { AuthModal } from "./components/AuthModal";
+import { useGame } from "./context/GameContext";
+import { useAuth } from "./context/AuthContext";
+
+import GameOutcomeModal from "./components/GameOutcomeModal";
+import Menu from "./components/Menu";
+import GameBoard from "./components/GameBoard";
+
 export default function App() {
-  const [currentGame, setCurrentGame] = useState(null);
-  // Referencia para el teclado virtual
+  const {
+    currentGame,
+    startNewGame,
+    press,
+    loseGame,
+    outcomeVisible,
+    hideOutcome,
+  } = useGame();
+  const { user } = useAuth();
+
   const keyboardRef = useRef(null);
+  const [authOpen, setAuthOpen] = useState(false);
 
   async function handleStartNewGame() {
     if (currentGame) {
       console.error("Ya tiene un juego iniciado");
       return;
     }
-    const game = new Game();
-    const newGame = await Game.startGame(game);
-
-    setCurrentGame(newGame);
+    // Requerir autenticación: si no hay usuario, abrir modal de auth
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+    await startNewGame(user?.username ?? null);
   }
 
   // Maneja el caso de derrota
-  function handleLose() {}
+  async function handleLose() {
+    try {
+      await loseGame();
+    } catch (e) {
+      console.error("Error al rendirse:", e);
+    }
+  }
 
   // Revela la palabra manualmente (botón "Mostrar")
   // async function reveal() {
@@ -41,13 +65,11 @@ export default function App() {
   }
 
   function handleKeyDown(e) {
-    if (e.key && /^[a-zA-Z]$/.test(e.key))
-      Game.press(currentGame, e.key.toLowerCase());
+    if (e.key && /^[a-zA-Z]$/.test(e.key)) press(e.key.toLowerCase());
   }
 
   async function handlePress(letter) {
-    const newGameState = await Game.press(currentGame, letter);
-    setCurrentGame(newGameState);
+    await press(letter);
   }
 
   // Inicializa la partida al montar el componente
@@ -86,80 +108,26 @@ export default function App() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
       ref={keyboardRef}>
+      <AuthModal
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        icon={"/logo.png"}
+      />
       <div className="container">
-        <header className="top">
-          <div className="brand">
-            <div className="logo">H</div>
-            <div>
-              <h1>El Ahorcado</h1>
-              <p className="subtitle">Edición: Pokémon • 1ª generación</p>
-            </div>
-          </div>
-          <div className="actions">
-            <button className="btn ghost" onClick={handleStartNewGame}>
-              Nueva partida
-            </button>
-            <button className="btn" onClick={hint}>
-              Pista
-            </button>
-          </div>
-        </header>
-
-        {currentGame && currentGame.currentPlayer && (
-          <main className="game">
-            <section className="center">
-              <div className="card main">
-                <div className="tries">
-                  Intentos:{" "}
-                  <strong>
-                    {Math.max(
-                      0,
-                      currentGame?.maxTriesByPlayer -
-                        currentGame?.currentPlayer.wrong
-                    )}
-                  </strong>
-                </div>
-                <div className="secret">
-                  <div className="secret-inner">
-                    {currentGame.masked.map((ch, i) => (
-                      <div
-                        key={i}
-                        className={`slot ${ch === "_" ? "empty" : ""}`}>
-                        {ch}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="keyboard">
-                  {letters.map((l) => (
-                    <button
-                      key={l}
-                      className={`key ${currentGame.used.has(l) ? "used" : ""}`}
-                      onClick={() => handlePress(l)}
-                      // aria-pressed={`${currentGame.used.has(l) as React.AriaAttributes["aria-pressed"]}`}
-                    >
-                      {l.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-                <div className="controls">
-                  {/* <button className="btn primary" onClick={reveal}>
-                    Mostrar
-                  </button> */}
-                  <button className="btn ghost" onClick={handleLose}>
-                    Rendirme
-                  </button>
-                </div>
-              </div>
-              <div className="status">
-                <div>
-                  Score: <strong>{currentGame.currentPlayer.score}</strong>
-                </div>
-              </div>
-            </section>
-          </main>
-        )}
-        <footer className="foot">Hecho con ❤️ • Demo Building Day</footer>
+        {!currentGame ? (
+          <Menu
+            onNewGame={handleStartNewGame}
+            onOpenAuth={() => setAuthOpen(true)}
+            user={user}
+          />
+        ) : null}
+        <GameOutcomeModal isOpen={outcomeVisible} onClose={hideOutcome} />
+        <GameBoard
+          currentGame={currentGame}
+          letters={letters}
+          onPress={handlePress}
+          onLose={handleLose}
+        />
       </div>
     </div>
   );
