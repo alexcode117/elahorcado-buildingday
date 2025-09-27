@@ -108,7 +108,3 @@ A continuación se listan los archivos más relevantes tocados durante la sesió
 - (Reutilizable) Extraer un `SecretScroller` componente para encapsular la lógica del scroll, reutilizable en otros componentes.
 
 ---
-
-Si quieres, genero un PR con este resumen y los cambios o extraigo tareas concretas (por ejemplo A/B/C de la sección "Próximos pasos") y las aplico en orden.
-
-Si quieres más detalle (lista completa de diffs por archivo), lo agrego al documento.

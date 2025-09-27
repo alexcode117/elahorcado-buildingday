@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children, storageKey = "elahorcado_user" }) => {
     setError(null);
     try {
       localStorage.removeItem(storageKey);
-    } catch (e) {}
+    } catch (e) { }
   }, [storageKey]);
 
   const value = {

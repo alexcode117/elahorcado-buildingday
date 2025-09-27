@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -32,7 +32,7 @@ export const GameProvider = ({ children, storageKey = "current_game" }) => {
       } else {
         localStorage.removeItem(storageKey);
       }
-    } catch (e) {}
+    } catch (e) { }
   }, [currentGame, storageKey]);
 
   // Control para mostrar el modal de resultado (win/lose)

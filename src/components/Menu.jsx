@@ -1,6 +1,5 @@
-import React from "react";
-import Button from "./ui/Button";
 import "./Menu.css";
+import Button from "./ui/Button";
 import Card from "./ui/Card";
 
 const Menu = ({ onNewGame, onOpenAuth, user }) => {

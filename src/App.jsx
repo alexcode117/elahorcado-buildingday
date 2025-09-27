@@ -72,7 +72,6 @@ export default function App() {
     await press(letter);
   }
 
-  // Inicializa la partida al montar el componente
   useEffect(() => {
     keyboardRef.current?.focus();
     const stream = hiveClient.blockchain.getBlockStream();
@@ -98,12 +97,10 @@ export default function App() {
     };
   }, [currentGame]);
 
-  // Letras del teclado virtual
   const letters = "abcdefghijklmnopqrstuvwxyz".split("");
 
-  // Renderizado de la interfaz
   return (
-    <div
+    <main
       className="app"
       onKeyDown={handleKeyDown}
       tabIndex={0}
@@ -113,22 +110,20 @@ export default function App() {
         onClose={() => setAuthOpen(false)}
         icon={"/logo.png"}
       />
-      <div className="container">
-        {!currentGame ? (
-          <Menu
-            onNewGame={handleStartNewGame}
-            onOpenAuth={() => setAuthOpen(true)}
-            user={user}
-          />
-        ) : null}
-        <GameOutcomeModal isOpen={outcomeVisible} onClose={hideOutcome} />
-        <GameBoard
-          currentGame={currentGame}
-          letters={letters}
-          onPress={handlePress}
-          onLose={handleLose}
+      {!currentGame ? (
+        <Menu
+          onNewGame={handleStartNewGame}
+          onOpenAuth={() => setAuthOpen(true)}
+          user={user}
         />
-      </div>
-    </div>
+      ) : null}
+      <GameOutcomeModal isOpen={outcomeVisible} onClose={hideOutcome} />
+      <GameBoard
+        currentGame={currentGame}
+        letters={letters}
+        onPress={handlePress}
+        onLose={handleLose}
+      />
+    </main>
   );
 }

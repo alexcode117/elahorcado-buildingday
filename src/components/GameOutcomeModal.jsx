@@ -1,4 +1,4 @@
-import React from "react";
+
 import ModalUI from "./ui/ModalUI";
 import Button from "./ui/Button";
 import { useGame } from "../context/GameContext";
@@ -21,8 +21,8 @@ const GameOutcomeModal = ({ isOpen, onClose }) => {
   const message = won
     ? `Has ganado 🎉 — palabra: ${currentGame.word}`
     : lost
-    ? `Has perdido 😢 — palabra: ${currentGame.word}`
-    : "Partida finalizada";
+      ? `Has perdido 😢 — palabra: ${currentGame.word}`
+      : "Partida finalizada";
 
   const handlePlayAgain = async () => {
     await startNewGame(user?.username ?? null);

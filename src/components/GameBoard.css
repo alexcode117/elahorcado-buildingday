@@ -1,25 +1,9 @@
-.game {
-  display: grid;
-  gap: 18px;
-  align-items: start;
-}
-
-.center {
+.board-body {
+  width: 100%;
+  margin: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.card.main {
-  background: var(--surface);
-  border-radius: 12px;
-  padding: 20px 6px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
+  gap: 20px
 }
 
 .board-header {
@@ -56,11 +40,9 @@
 }
 
 .tries.low .tries-value {
-  background: linear-gradient(
-    90deg,
-    rgba(227, 19, 55, 0.14),
-    rgba(255, 255, 255, 0)
-  );
+  background: linear-gradient(90deg,
+      rgba(227, 19, 55, 0.14),
+      rgba(255, 255, 255, 0));
   color: var(--danger);
 }
 
@@ -71,6 +53,10 @@
   align-items: center;
   gap: 4px;
   flex-direction: column;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.6),
+      rgba(250, 250, 250, 0.9));
+  padding: 2px;
 }
 
 .secret-viewport {
@@ -84,7 +70,8 @@
   display: grid;
   grid-template-columns: repeat(var(--cols, 11), var(--slot-size));
   gap: 6px;
-  width: max-content; /* shrink to content so viewport controls the visible area */
+  width: max-content;
+  /* shrink to content so viewport controls the visible area */
   justify-items: center;
   align-items: center;
 }
@@ -164,11 +151,9 @@
 }
 
 .key {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.6),
-    rgba(250, 250, 250, 0.9)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.6),
+      rgba(250, 250, 250, 0.9));
   border: 1px solid rgba(33, 33, 33, 0.06);
   padding: 12px 14px;
   border-radius: 10px;

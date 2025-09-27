@@ -48,74 +48,70 @@ const GameBoard = ({ currentGame, letters, onPress, onLose }) => {
   }, [currentGame.masked]);
 
   return (
-    <main className="game">
-      <section className="center">
-        <Card className="main">
-          <div className={`board-header`}>
-            <div className={`tries ${remaining <= 2 ? "low" : ""}`}>
-              <div className="tries-label">Intentos</div>
-              <div className="tries-value">{remaining}</div>
-            </div>
-            <div className="secret-arrows">
-              <button
-                className="secret-arrow"
-                onClick={scrollToStart}
-                aria-label="Ir principio">
-                ‹
-              </button>
-              <button
-                className="secret-arrow"
-                onClick={scrollToEnd}
-                aria-label="Ir final">
-                ›
-              </button>
-            </div>
-            <div className="status">
-              <div className="score">Score</div>
-              <div className="score-value">
-                {currentGame.currentPlayer.score}
-              </div>
-            </div>
+    <>
+      <div className={`board-header`}>
+        <div className={`tries ${remaining <= 2 ? "low" : ""}`}>
+          <div className="tries-label">Intentos</div>
+          <div className="tries-value">{remaining}</div>
+        </div>
+        <div className="status">
+          <div className="score">Score</div>
+          <div className="score-value">
+            {currentGame.currentPlayer.score}
           </div>
+        </div>
+      </div>
 
-          <div className="secret">
-            <div className="secret-viewport" ref={containerRef}>
-              <div
-                className="secret-inner"
-                style={{
-                  "--cols": Math.min(currentGame.masked.length || 0, 11),
-                }}>
-                {currentGame.masked.map((ch, i) => (
-                  <div
-                    key={i}
-                    ref={(el) => (slotRefs.current[i] = el)}
-                    className={`slot ${ch === "_" ? "empty" : "revealed"}`}>
-                    {ch}
-                  </div>
-                ))}
-              </div>
+      <div className="board-body">
+        <div className="secret">
+          <div className="secret-viewport" ref={containerRef}>
+            <div
+              className="secret-inner"
+              style={{
+                "--cols": Math.min(currentGame.masked.length || 0, 11),
+              }}>
+              {currentGame.masked.map((ch, i) => (
+                <div
+                  key={i}
+                  ref={(el) => (slotRefs.current[i] = el)}
+                  className={`slot ${ch === "_" ? "empty" : "revealed"}`}>
+                  {ch}
+                </div>
+              ))}
             </div>
           </div>
-
-          <div className="keyboard">
-            {letters.map((l) => (
-              <button
-                key={l}
-                className={`key ${currentGame.used.has(l) ? "used" : ""}`}
-                onClick={() => onPress(l)}>
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
-          <div className="controls">
-            <Button variant={"ghost"} onClick={onLose}>
-              Rendirme
-            </Button>
-          </div>
-        </Card>
-      </section>
-    </main>
+        </div>
+        <div className="secret-arrows">
+          <button
+            className="secret-arrow"
+            onClick={scrollToStart}
+            aria-label="Ir principio">
+            ‹
+          </button>
+          <button
+            className="secret-arrow"
+            onClick={scrollToEnd}
+            aria-label="Ir final">
+            ›
+          </button>
+        </div>
+        <div className="keyboard">
+          {letters.map((l) => (
+            <button
+              key={l}
+              className={`key ${currentGame.used.has(l) ? "used" : ""}`}
+              onClick={() => onPress(l)}>
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="controls">
+        <Button variant={"primary"} onClick={onLose}>
+          Rendirme
+        </Button>
+      </div>
+    </>
   );
 };
 
