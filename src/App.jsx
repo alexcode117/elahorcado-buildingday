@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import { Game } from "./logic/game";
 import "./blockchain/blockchain";
-import { hiveClient } from "./blockchain/blockchain";
+import { fetchGameInfo, hiveClient } from "./blockchain/blockchain";
 
 export default function App() {
   const [currentGame, setCurrentGame] = useState(null);
